@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+namespace VRMultiplayer.Template.Offline.Installation{
+
+    public abstract class ProtocolManager : MonoBehaviour
+    {
+        [HideInInspector] public bool protocolFinished;
+        public abstract void StartTheProtocol();
+        public abstract void StopTheProtocol();
+
+        public bool IsProtocolFinished(){
+            return protocolFinished;
+        }
+    }
+
+    [System.Serializable]
+    public class Protocol{
+        public string title;
+        public ProtocolManager protocolManager;
+    }
+}
+

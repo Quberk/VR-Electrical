@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace VRMultiplayer.Template.Offline.Installation{
+    public class SimulationManager : MonoBehaviour
+    {
+        private int stepsAmount;
+        private int step = 1;
+
+        [Header("Semua Protocol Manager adalah Class Installation yang merupakan turunan Protocol Manager")]
+        [SerializeField] private Protocol[] protocolManagers;
+        private bool protocolInAction;
+
+        void Start(){
+            stepsAmount = protocolManagers.Length;
+        }
+
+        void Update(){
+
+            //Simulasi berakhir jika sudah tidak ada lagi Step
+            if (step > stepsAmount)
+                return;
+            
+            //Jika ada Protocol sedang berjalan maka jangan diganggu
+            if (protocolInAction){
+
+                //Mengecek apakah Protokol telah selesai jika ya maka kita bisa lanjut ke Protokol selanjutnya
+                if (protocolManagers[step - 1].protocolManager.IsProtocolFinished()){
+                    protocolInAction = false;
+                    step++;
+                }
+                    
+
+                return;
+            }
+
+            //Mengaktifkan Protocol sesuai dengan step
+            protocolManagers[step - 1].protocolManager.StartTheProtocol();
+            protocolInAction = true;
+
+        }
+    }
+}
+

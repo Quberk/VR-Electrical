@@ -1,0 +1,71 @@
+using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+
+namespace VRMultiplayer.Template.Offline.Installation{
+
+    /// <summary>
+    /// Class ini berfungsi mengatur cara kerja Animasi Objek yang tertrigger ketika diTekan oleh User
+
+    /// Alur Kerja Class ini :
+    /// Ketika Protokol aktif maka Objek akan dibuat Glow
+    /// Setelah objek ditekan oleh User maka akan mentrigger sebuah Animasi,
+    /// dan juga efek Glow akan hilang
+    /// </summary>
+
+    //Class ini membutuhkan XRSimpleInteractable Component
+    // Class ini membutuhkan ObjectGlowManager Component
+    [RequireComponent(typeof(XRSimpleInteractable))]
+    [RequireComponent(typeof(ObjectGlowManager))]
+    public class ObjectAnimationTriggerManager : ProtocolManager
+    {
+        ///<param name = "targetObject">Sebagai Objek yang ingin dijadikan Trigger</param>
+        ///<param name = "targetAnimator">Animator dari Objek yang ingin animasinya diTrigger</param>
+        ///<param name = "simpleInteractable">Referensi Komponen SimpleInteractable yg berfungsi sbg penerima Trigger klik dari User</param>
+        ///<param name = "objectGlowManager">Referensi Komponen ObjectGlowManager yg berfungsi utk membuat Objek Glow</param>
+        ///<param name = "deactivateColliderAfterTrigger">Variable untuk mengetahui apakah setelah animasi terTrigger Collider dinonaktifkan atau tidak</param>
+
+        [SerializeField] private GameObject targetObject;
+        [SerializeField] private Animator targetAnimator;
+
+        [SerializeField] private bool deactivateColliderAfterTrigger;
+
+        private XRSimpleInteractable simpleInteractable;
+        private ObjectGlowManager objectGlowManager;
+
+        void Start(){
+            objectGlowManager = gameObject.GetComponent<ObjectGlowManager>();
+            simpleInteractable = gameObject.GetComponent<XRSimpleInteractable>();
+
+            simpleInteractable.onSelectEntered.AddListener(OnSelectEnter);
+        }
+
+
+        private void OnSelectEnter(XRBaseInteractor interactor){
+
+            BeginAnimation();
+        }
+
+        void BeginAnimation(){
+            targetAnimator.SetTrigger("ActionStart");
+            objectGlowManager.StopToGlow();
+
+            //Menonaktifkan Collider setelah animasi dimainkan
+            if (deactivateColliderAfterTrigger)
+                targetObject.GetComponent<Collider>().enabled = false;
+        }
+
+        
+        //===============================OVERRIDES FUNCTION===============================
+        public override void StartTheProtocol()
+        {
+            objectGlowManager.StartToGlow(0);
+        }
+
+        public override void StopTheProtocol()
+        {
+            protocolFinished = true;
+            
+        }
+    }
+
+}
